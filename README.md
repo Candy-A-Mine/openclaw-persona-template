@@ -8,6 +8,48 @@
 
 示例角色是「世凪（Yonagi）」——一个文静傲娇的物理系大学生。你可以基于这个示例修改出自己的角色。
 
+## 前置要求
+
+### OpenClaw 是什么
+
+[OpenClaw](https://github.com/nicholasgasior/openclaw) 是一个开源的 AI agent 框架，可以通过 Telegram、Discord 等渠道与你的 AI 角色对话。它支持：
+
+- **workspace 目录**（`~/.openclaw/workspace/`）：存放角色的配置文件，OpenClaw 启动时自动加载
+- **heartbeat 机制**：按固定间隔触发定时任务（写日记、情绪维护、主动消息等）
+- **skill 系统**：扩展角色能力（天气查询、浏览器操作、语音转文字等）
+- **文件读写权限**：角色可以读写 workspace 内的文件，实现状态持久化
+
+### 安装和配置
+
+1. 安装 OpenClaw（需要 Node.js 18+）：
+   ```bash
+   npm install -g @nicholasgasior/openclaw
+   ```
+2. 完成 OpenClaw 的基础配置（模型 API、Telegram Bot 等），参考 [OpenClaw 官方文档](https://github.com/nicholasgasior/openclaw)
+3. 确认 `~/.openclaw/workspace/` 目录存在
+
+### workspace 如何生效
+
+OpenClaw 启动时会自动读取 `~/.openclaw/workspace/` 下的 `.md` 文件作为角色的 system prompt。本模板的文件结构就是按照这个机制设计的：
+
+- `AGENTS.md` 定义了每次 session 启动时角色应该读取哪些文件、按什么顺序加载
+- `HEARTBEAT.md` 定义了 heartbeat 触发时角色应该执行哪些定时任务
+- 其余文件（SOUL.md、IDENTITY.md 等）由 AGENTS.md 引导角色在 session 启动时主动读取
+
+### heartbeat 如何触发
+
+OpenClaw 的 heartbeat 是一个定时器，按配置的间隔（建议 2 小时）向角色发送一个 heartbeat 信号。角色收到信号后，按照 `HEARTBEAT.md` 的指令执行定时任务。在 OpenClaw 配置中启用 heartbeat：
+
+```json
+{
+  "heartbeat": {
+    "interval": 7200
+  }
+}
+```
+
+> **注意**：heartbeat 间隔单位是秒，7200 = 2 小时。
+
 ## 系统架构
 
 ```
@@ -71,6 +113,16 @@ workspace/
 ### 排版规则（SOUL.md 顶部）
 
 强制真人聊天风格：禁止 markdown、禁止一句一行、禁止空行分段小作文、禁止省略号滥用。包含正确/错误示范。
+
+## 文件说明
+
+模板中的文件分为三类：
+
+| 类型 | 文件 | 说明 |
+|------|------|------|
+| 示例 | `SOUL.md`、`IDENTITY.md` | 包含世凪的完整角色设定，作为示例展示系统能力。需要替换为你自己的角色 |
+| 模板 | `USER.md`、`TOOLS.md`、`MOLTBOOK.md` | 包含 `{{占位符}}`，填入你的信息即可 |
+| 通用 | `AGENTS.md`、`HEARTBEAT.md`、`MEMORY.md`、`memory/*` | 可以直接使用，不需要修改 |
 
 ## 快速开始
 
@@ -146,6 +198,24 @@ cp -r workspace/ ~/.openclaw/workspace/
 - **框架而非台词**：SOUL.md 描述的是行为框架，不是固定的对话模板，角色基于框架自由发挥
 - **真人模拟**：排版规则、打字不完美、社交能量、情绪惯性等机制都在模拟真人的自然表现
 - **双向成长**：角色会因为对话而产生真实的变化，不是固定不变的人格模板
+
+## 常见问题
+
+### 角色不写日记 / 不主动发消息
+
+检查 OpenClaw 是否启用了 heartbeat，以及间隔是否合理（建议 7200 秒）。角色的定时任务完全依赖 heartbeat 触发。
+
+### 情绪系统看起来没生效
+
+检查 `memory/mood.json` 是否被正确读写。角色需要有 workspace 目录的文件读写权限。可以查看 mood.json 的 `since` 字段是否有被更新。
+
+### 换了模型后角色表现差很多
+
+这套系统对模型的指令遵循能力要求较高（排版规则、情绪衰减计算、日记质量自检等）。建议使用 Claude Sonnet 3.5 及以上或同等水平的模型。较弱的模型可能无法稳定遵守所有规则。
+
+### MEMORY.md 一直是空的
+
+MEMORY.md 由记忆整理任务填充，冷却时间是 3 天。首次使用需要等待至少 3 天并积累足够的日记内容后才会自动填充。
 
 ## License
 
