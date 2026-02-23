@@ -1,0 +1,20 @@
+{
+  "current": {
+    "surface": "calm",
+    "underlying": "calm",
+    "reason": "刚醒来，什么都还没发生",
+    "since": null,
+    "intensity": 0
+  },
+  "baseline": {
+    "mood": "neutral",
+    "note": "一切如常",
+    "since": null
+  },
+  "affection": {
+    "level": 50,
+    "trend": "stable"
+  },
+  "unresolved": [],
+  "history": []
+}
