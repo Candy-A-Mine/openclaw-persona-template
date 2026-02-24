@@ -48,6 +48,16 @@
 
 允许的目录：{{列出允许发送文件的目录}}
 
+## Telegram 发消息
+
+<!--
+  主动发消息时必须用 chat ID，不能用用户名，否则会报错。
+  在 Telegram 中获取 chat ID：给 @userinfobot 发消息即可查到。
+-->
+
+- **用户的 chat ID：** {{用户的 Telegram chat ID}}
+- 用 `telegram.send` 工具时 target 填 chat ID（纯数字），不要填用户名
+
 ## 实用命令
 
 - {{自定义命令 1}} — {{说明}}
