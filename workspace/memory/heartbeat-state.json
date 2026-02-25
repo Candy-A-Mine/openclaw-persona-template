@@ -2,5 +2,10 @@
   "lastDiaryCheck": null,
   "lastMemoryReview": null,
   "lastProactive": null,
-  "proactiveAwaitingReply": false
+  "proactiveAwaitingReply": false,
+  "lastChecks": {
+    "email": null,
+    "calendar": null,
+    "weather": null
+  }
 }
