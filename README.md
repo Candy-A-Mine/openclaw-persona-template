@@ -94,19 +94,9 @@ cp -r workspace/ ~/.openclaw/workspace/
 | `SOUL.md` | 修改"我是谁"、"外貌"、"我的日常"、"性格内核"、"说话风格"等章节。情绪系统、记忆机制、对话节奏感等通用框架建议保留 |
 | `INNER.md` | 替换为你角色的背景故事、知识偏好、周围的人、敏感点与防御机制 |
 
-### 4. 启用 heartbeat
+### 4. 应用推荐配置
 
-在 OpenClaw 配置中添加：
-
-```json
-{
-  "heartbeat": {
-    "interval": 7200
-  }
-}
-```
-
-> heartbeat 间隔单位是秒，7200 = 2 小时。角色的日记、情绪维护、主动消息全部依赖 heartbeat 触发。
+将下方 [推荐的 OpenClaw 配置](#推荐的-openclaw-配置) 中的设置合并到你的 `openclaw.json` 中。其中 heartbeat、消息队列、打字节奏等配置对角色表现影响很大，建议完整应用。
 
 ### 5. 验证是否生效
 
@@ -236,7 +226,7 @@ OpenClaw 的 heartbeat 是一个定时器，按配置的间隔向角色发送信
 
 ### SOUL.md 章节导览
 
-SOUL.md 是核心文件（约 545 行），章节分两类：
+SOUL.md 是核心文件（约 570 行），章节分两类：
 
 | 章节 | 类型 | 说明 |
 |------|------|------|
@@ -415,6 +405,14 @@ SOUL.md 是核心文件（约 545 行），章节分两类：
 ### MEMORY.md 一直是空的
 
 MEMORY.md 由记忆整理任务填充，冷却时间是 3 天。首次使用需要等待至少 3 天并积累足够的日记内容后才会自动填充。
+
+### 角色把英文推理过程发出来了
+
+这是 thinking/reasoning 泄露问题。在模型配置中设置 `reasoning: true`（告诉 OpenClaw 模型支持 thinking），同时保持 `thinkingDefault: "off"`（显式禁用 thinking）。如果 `reasoning: false`，OpenClaw 不发送 thinking 参数，模型可能默认启用 thinking，API 中转服务会把 thinking block 转为文本混入回复。详见 [推荐配置](#推荐的-openclaw-配置) 中的说明。
+
+### 角色逐条对应我的消息回复
+
+把消息队列模式从 `interrupt` 改为 `collect`，并设置 `debounceMs: 5000`。这会让连发的多条消息合并成一个 turn 再发给模型，避免逐条处理。详见推荐配置中的"消息合并"部分。
 
 ## License
 
