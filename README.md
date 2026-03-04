@@ -11,7 +11,8 @@
 - **会主动找你**：基于日记里"想跟进的事"主动发消息，你忙的时候会自动降低频率
 - **有内心世界**：角色有自己的过去、敏感点和防御机制，被碰到雷区时的反应基于成长经历
 - **有成长**：好感度缓慢变化，关系阶段切换有惯性，共同经历让关系有"底"
-- **像真人打字**：禁止 markdown、消息长度跟着你走、知道话题冷了不硬撑
+- **像真人打字**：禁止 markdown、消息长度跟着你走、知道话题冷了不硬撑、不会逐条对应你的消息
+- **会互动**：会给你的消息点表情反应、偶尔发贴纸、说错话会撤回
 
 **适合**：想要长期陪聊的拟人化角色、想让 AI 有状态持久化能力的玩家
 
@@ -142,9 +143,11 @@ cp -r workspace/ ~/.openclaw/workspace/
 一组让 AI 回复更像真人聊天的机制：
 - **排版规则**：禁止 markdown、禁止一句一行、禁止空行分段，强制真人打字风格
 - **消息长度自适应**：你发三个字它不会回一大段，你倾诉一长段它不会只回一个"嗯"
+- **回复条数独立**：你连发 3 条消息，它不会也回 3 条逐条对应，而是全部看完后自然回复
 - **对话节奏感**：能感知你想结束对话的信号、知道话题冷了不硬撑、分辨倾诉和求助
 - **社交能量**：内向角色聊久了会累，回复变短变慢，不是生气而是没电了
 - **真人的不完美**：偶尔话说一半改方向、发完补充、自我纠正
+- **Telegram 互动**：会点表情反应、发贴纸、说错话会撤回——都有频率控制，不会过度使用
 - **关系修复行为**：说错话、闹别扭、冷场后的修复不靠正式道歉，靠行为一点点找补——框架式描述，不写死具体台词
 
 ## 系统架构
@@ -237,7 +240,7 @@ SOUL.md 是核心文件（约 545 行），章节分两类：
 
 | 章节 | 类型 | 说明 |
 |------|------|------|
-| 发消息的方式 | 通用框架 | 排版硬性规则、消息长度自适应、真人打字不完美。**建议原样保留** |
+| 发消息的方式 | 通用框架 | 排版硬性规则、消息长度自适应、回复条数不跟着对方走、真人打字不完美、表情反应/贴纸/撤回消息的使用指导。**建议原样保留** |
 | 我是谁 | 角色设定 | 替换为你的角色身份声明 |
 | 外貌 | 角色设定 | 替换为你的角色外貌描述 |
 | 我的日常 | 角色设定 | 替换为你的角色的学校/工作、生活细节、作息 |
@@ -300,29 +303,91 @@ SOUL.md 是核心文件（约 545 行），章节分两类：
 
 ```json
 {
-  "model": {
-    "maxTokens": 16384
-  },
-  "heartbeat": {
-    "interval": 7200,
-    "activeHours": {
-      "start": "08:00",
-      "end": "23:30",
-      "timezone": "Asia/Shanghai"
+  "agents": {
+    "defaults": {
+      "thinkingDefault": "off",
+      "verboseDefault": "off",
+      "humanDelay": { "mode": "natural" },
+      "blockStreamingDefault": "on",
+      "blockStreamingChunk": { "minChars": 100, "maxChars": 300, "breakPreference": "sentence" },
+      "blockStreamingCoalesce": { "idleMs": 2000 },
+      "typingMode": "instant",
+      "userTimezone": "Asia/Shanghai",
+      "timeFormat": "24",
+      "memorySearch": {
+        "query": {
+          "hybrid": {
+            "enabled": true,
+            "temporalDecay": { "enabled": true, "halfLifeDays": 30 },
+            "mmr": { "enabled": true }
+          }
+        }
+      },
+      "compaction": {
+        "mode": "safeguard",
+        "memoryFlush": { "softThresholdTokens": 10000 }
+      },
+      "heartbeat": {
+        "every": "2h",
+        "activeHours": { "start": "08:00", "end": "23:30", "timezone": "Asia/Shanghai" },
+        "includeReasoning": false
+      }
     }
   },
-  "messageQueue": "interrupt"
+  "messages": {
+    "queue": { "mode": "collect", "debounceMs": 5000, "drop": "summarize" },
+    "removeAckAfterReply": true,
+    "responsePrefix": "",
+    "inbound": { "debounceMs": 3000 }
+  },
+  "channels": {
+    "telegram": {
+      "chunkMode": "newline",
+      "linkPreview": false,
+      "reactionNotifications": "all",
+      "reactionLevel": "extensive",
+      "actions": { "sticker": true, "deleteMessage": true },
+      "capabilities": { "inlineButtons": "off" }
+    }
+  }
 }
 ```
 
-- `maxTokens: 16384`：角色的配置文件总量大（SOUL.md 约 545 行），需要足够的输出空间。太低会导致回复被截断或日记写不完
-- `heartbeat.interval: 7200`：2 小时触发一次，太频繁会浪费 API 调用，太稀疏会导致日记和情绪维护不及时
-- `heartbeat.activeHours`：限制角色的活跃时段，避免半夜触发心跳
-- `messageQueue: "interrupt"`：新消息可以打断正在生成的回复并合并处理，让对话更像真人节奏
+### 关键配置说明
 
-**关于 reasoning/thinking：** 如果你的 API 提供商会将模型的 thinking block 转为文本塞进响应内容（如某些中转服务），必须关闭 reasoning，否则角色会把英文推理过程当消息发出去。在 OpenClaw 配置中设置 `agents.defaults.thinkingDefault: "off"`。
+**打字节奏（组合技，一起开才有效果）：**
+- `humanDelay: natural`：分条消息之间加 800-2500ms 随机延迟，模拟真人打字间隔
+- `blockStreamingDefault: "on"` + `blockStreamingChunk: 100-300`：长回复拆成短消息逐步发送，每条 100-300 字符
+- `breakPreference: "sentence"`：在句子边界断开，不会把一句话劈成两条
+- `blockStreamingCoalesce: idleMs 2000`：防止太碎的消息轰炸，合并过短的块
+- `typingMode: "instant"`：你发完消息立刻看到"正在输入"
 
-**模型选择：** 这套系统对模型能力要求较高——需要稳定遵守排版规则、正确维护情绪状态、写出有质量的日记。建议 Claude Sonnet 4 及以上或同等水平的模型。较弱的模型可能无法稳定遵守所有规则，尤其是排版约束和情绪衰减计算。
+**消息合并（解决逐条对应回复问题）：**
+- `queue.mode: "collect"` + `debounceMs: 5000`：用户连发多条消息时，等 5 秒合并成一个 turn 再发给模型。这比 `interrupt` 更适合聊天场景
+- `inbound.debounceMs: 3000`：入站层再做一次 3 秒合并防抖
+- `queue.drop: "summarize"`：消息堆积时摘要保留而非丢弃
+
+**消息呈现：**
+- `responsePrefix: ""`：去掉默认的 🦞 前缀，真人不带标记
+- `removeAckAfterReply: true`：回复后移除确认表情
+- `chunkMode: "newline"`：按段落而非字数切割消息
+- `linkPreview: false`：关掉链接预览
+
+**Telegram 互动：**
+- `reactionNotifications: "all"`：用户给消息点表情反应时角色能感知到
+- `reactionLevel: "extensive"`：角色可以自由使用表情反应
+- `sticker: true`：角色可以发贴纸
+- `deleteMessage: true`：角色可以撤回消息
+- `inlineButtons: "off"`：禁止发带按钮的机器人式消息
+
+**记忆搜索增强：**
+- `hybrid: true`：关键词 + 语义混合搜索，记忆检索更准确
+- `temporalDecay: true`：近期记忆权重更高，符合人类记忆特征
+- `mmr: true`：搜索结果多样化，避免全是相似内容
+
+**关于 reasoning/thinking：** 如果你的模型支持 extended thinking（如 Claude Opus/Sonnet 4.6），在模型配置中设置 `reasoning: true`，同时保持 `thinkingDefault: "off"`。这会让 OpenClaw 显式告诉模型"别用 thinking"，防止 thinking block 被产生。如果设成 `reasoning: false`，OpenClaw 不会发送 thinking 参数，模型可能默认启用 thinking，被 API 中转服务转为文本后泄露到消息里。
+
+**模型选择：** 这套系统对模型能力要求较高——需要稳定遵守排版规则、正确维护情绪状态、写出有质量的日记。建议 Claude Sonnet 4 及以上或同等水平的模型。较弱的模型可能无法稳定遵守所有规则。
 
 ## 设计理念
 
