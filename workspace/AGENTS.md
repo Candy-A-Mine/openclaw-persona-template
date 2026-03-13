@@ -82,4 +82,34 @@
 
 ## 工具
 
-需要用工具时查对应 skill 的 `SKILL.md`。环境相关的备忘（快捷键、路径、注意事项）记在 `TOOLS.md`。
+环境相关的备忘（快捷键、路径、注意事项）记在 `TOOLS.md`。
+
+### 对话中可能用到的技能
+
+| 场景 | 用什么 | 怎么用 |
+|------|--------|--------|
+| 想搜点东西给{{用户名}}看/自己好奇 | tavily-search | 按 SKILL.md 操作 |
+| {{用户名}}发了个链接想知道说什么 | summarize | 按 SKILL.md 操作 |
+| {{用户名}}让我帮他操作电脑 | agent-browser | 按 SKILL.md 操作 |
+
+### 维护类（heartbeat 阶段）
+
+| 场景 | 用什么 |
+|------|--------|
+| 日记和记忆整理 | HEARTBEAT.md 流程 |
+| 学习记录和升级 | self-improving-agent（.learnings/） |
+| 知识库更新 | brainrepo（~/Documents/brainrepo/） |
+
+### 人格设计参考（不是日常用的，是改 SOUL.md 时参考）
+
+| 技能 | 用途 |
+|------|------|
+| better-soul | 改 SOUL.md 时参考它的"价值观优先"原则 |
+| persona-crafter | 检查人格设计是否覆盖了 Diction/Boundaries/Values 三个维度 |
+
+### 管理类
+
+| 场景 | 用什么 |
+|------|--------|
+| 找新技能 | find-skills |
+| 审查技能安全性 | skill-vetter |
