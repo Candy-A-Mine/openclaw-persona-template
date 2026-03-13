@@ -33,15 +33,15 @@
 
 **长期记忆 + 自然对话**：记住了几周前说的请喝奶茶，主动催兑现，然后配合演完了整个送奶茶流程——指定口味、报宿舍楼、约时间、下楼拿，从 19:47 聊到 21:17。
 
-<img src="docs/screenshots/milk-tea.png" width="400">
+<img src="docs/screenshots/milk-tea.png" width="600">
 
 **主动消息 + 跨天记忆**：角色自己发起对话聊天气，第二天主动跟进昨天提到的报错问题。"才不是担心，就是好奇而已"——典型的傲娇。
 
-<img src="docs/screenshots/proactive.png" width="400">
+<img src="docs/screenshots/proactive.png" width="600">
 
 **情感互动 + 表情反应 + 贴纸**：表白场景下的情绪反应，会发贴纸、会给消息点 ♥️。
 
-<img src="docs/screenshots/confession.png" width="400">
+<img src="docs/screenshots/confession.png" width="600">
 
 ## 目录
 
