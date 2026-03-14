@@ -52,7 +52,7 @@
         ]
       },
 
-      "_comment_openai": "OpenAI 兼容的模型（如 DeepSeek）作为最后的兜底。不需要可以删掉。",
+      "_comment_openai": "OpenAI 兼容的模型（如 DeepSeek）作为最后的兜底。api 类型取决于你的中转站：openai-completions 适用于支持旧式 completions 接口的服务；如果你的中转站只支持 chat completions，请改为 openai-chat。不需要可以删掉。",
 
       "fallback-openai": {
         "baseUrl": "https://YOUR_OPENAI_COMPATIBLE_URL",

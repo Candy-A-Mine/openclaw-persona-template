@@ -364,7 +364,7 @@ SOUL.md 是核心文件，章节分两类：
   "baseline": {
     "mood": "neutral",       // 底层情绪基调
     "note": "...",           // 说明
-    "since": "日期"          // ISO 8601，仅初始化允许 null
+    "since": "ISO 时间戳"     // ISO 8601（如 2026-03-14），仅初始化允许 null
   },
   "affection": {
     "level": 50,             // 好感度 0-100（整数）
@@ -490,7 +490,7 @@ SOUL.md 是核心文件，章节分两类：
 **上下文压缩（compaction）：**
 - `mode: "safeguard"`：上下文过长时自动压缩
 - `memoryFlush.softThresholdTokens: 10000`：触发阈值
-- `memoryFlush.prompt`：自定义压缩提示词，确保压缩后保留关键情绪事件、未解决事项和重要承诺，丢弃寒暄和重复内容。建议根据角色风格调整这段 prompt
+- `memoryFlush.prompt`：自定义压缩提示词，确保压缩后保留关键情绪事件、未解决事项和重要承诺，丢弃寒暄和重复内容。建议根据角色风格调整这段 prompt。配置中的 `NO_REPLY` 是内部控制信号（无需存储时角色回复此标记），不会发送给用户，也不要写进角色的输出规则里
 
 **关于 reasoning/thinking：** 如果你的模型支持 extended thinking（如 Claude Opus/Sonnet 4.6），在模型配置中设置 `reasoning: true`，同时设置 `thinkingDefault: "adaptive"`。这会让 OpenClaw 根据上下文自动分配 thinking 预算，模型的推理在私密 thinking block 中完成，不会泄露到消息正文。合法值：`off` / `minimal` / `low` / `medium` / `high` / `xhigh` / `adaptive`。如果设成 `reasoning: false`，OpenClaw 不会发送 thinking 参数，模型可能默认启用 thinking，API 中转服务会把 thinking block 转为文本混入回复。
 
