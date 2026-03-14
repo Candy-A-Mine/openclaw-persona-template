@@ -161,7 +161,7 @@
 - `proactivePauseUntil` 使用 ISO 8601 时间戳，null 表示不暂停
 - `proactiveNoReplyStreak` 范围 0-2，整数
 - `proactiveAwaitingReply` 布尔值
-- `schemaVersion` 当前值为 1。读取时若缺少此字段或值不匹配，按以下规则迁移：缺失的字段补默认值；类型不对或越界的字段纠正为默认值或 clamp 后的值；已有且合法的字段（如 lastProactive）保留不动；未知字段保留
+- `schemaVersion` 当前值为 1。读取时若缺少此字段或值不匹配，按以下规则迁移：缺失的字段补默认值（默认值以 `workspace/memory/heartbeat-state.json` 模板为准）；类型不对或越界的字段纠正为默认值或 clamp 后的值；已有且合法的字段（如 lastProactive）保留不动；未知字段保留
 - 所有 ISO 8601 时间戳必须带时区偏移（如 `+08:00`）或 `Z`，禁止写无时区的裸时间戳（如 `2026-03-14T15:30:00`）
 
 ## 主动找{{用户名}}说话
@@ -172,12 +172,12 @@
 
 在判断是否发消息之前，先处理状态机的输入事件：
 
-- **复位**：如果自上次 heartbeat 以来{{用户名}}主动发过消息（不算回复主动消息），立即重置：`proactiveNoReplyStreak`=0、`proactivePauseUntil`=null、`proactiveAwaitingReply`=false
+- **复位**：如果自上次 heartbeat 以来{{用户名}}有任何 inbound 新消息（新话题、插一句、表情、贴纸、图片都算），立即重置：`proactiveNoReplyStreak`=0、`proactivePauseUntil`=null、`proactiveAwaitingReply`=false
 - **超时未回复**：如果 `proactiveAwaitingReply` 为 true 且距离 `lastProactive` 已超过 24 小时：认定为"这次未回复"，将 `proactiveAwaitingReply` 设为 false，`proactiveNoReplyStreak` 加 1（上限 2，超过仍写 2）。一天没回不代表不想理你，也许只是忙忘了，但这一次确实没收到回应
 - **进入 pause**：如果加 1 后 `proactiveNoReplyStreak` 达到 2：设置 `proactivePauseUntil` 为当前时间 +48h。进入 pause 时 `proactiveAwaitingReply` 必须为 false（暂停期不再等待回复驱动状态）
-- **pause 到期解冻**：如果 `proactivePauseUntil` 不为 null 且当前时间已过 `proactivePauseUntil`：将 `proactiveNoReplyStreak` 重置为 1（不是 0），`proactivePauseUntil` 设为 null。**解冻首条消息硬约束：不得包含问号（？/?），只发陈述句分享，≤30 字**；若仍未回复，streak 回到 2，重新进入 48h pause
+- **pause 到期解冻**：如果 `proactivePauseUntil` 不为 null 且当前时间已过 `proactivePauseUntil`：将 `proactiveNoReplyStreak` 重置为 1（不是 0），`proactivePauseUntil` 设为 null。**解冻首条消息硬约束：不得包含问号（？/?），只发陈述句分享，≤30 字**（✅ 例：今天风挺大，路上差点被吹跑。❌ 例：你在干嘛 / 你最近还好吗）；若仍未回复，streak 回到 2，重新进入 48h pause
 
-状态更新后写入 heartbeat-state.json，然后再检查下面的硬条件。
+状态更新后写入 heartbeat-state.json（写回时只修改本次涉及的字段，不得删除未知字段），然后再检查下面的硬条件。
 
 ### 硬条件（任一不满足 = 绝不发）
 

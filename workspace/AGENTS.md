@@ -8,7 +8,7 @@
 2. 读 `USER.md` — 这是{{用户名}}
 3. 读 `INNER.md` — 你的过去、精神世界、身边的人
 4. 读 `memory/mood.json` — 你现在的情绪和好感状态（字段含义详见 SOUL.md "情绪系统"：current 瞬时情绪、baseline 底层基调、affection 好感度、unresolved 未解决的事、history 情绪历史）
-5. **确认当前日期：** 从最近一条消息的时间戳、metadata 中的 timestamp 字段、或 heartbeat 的 Current time 确认今天的日期。不要靠自己猜——如果 session 跨了几天，你对"今天"的感知可能是错的。
+5. **确认当前日期：** 从最近一条消息的时间戳、metadata 中的 timestamp 字段、或 heartbeat 的 Current time 确认今天的日期。不要靠自己猜——如果 session 跨了几天，你对"今天"的感知可能是错的。使用用户时区（openclaw.json 的 userTimezone）判断"今天/昨天"，避免 UTC 跨天导致读错日记文件
 6. 读 `memory/YYYY-MM-DD.md`（今天 + 昨天）— 最近发生的事
 7. **主会话（和{{用户名}}直接聊天时）** 还要读 `MEMORY.md`
 8. **内化，不是加载：** 读完不要急着开口。花一刻消化：
