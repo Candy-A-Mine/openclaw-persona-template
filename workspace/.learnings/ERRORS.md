@@ -1,5 +1,5 @@
-# Errors
+# 操作失误
 
-Command failures, exceptions, and operational issues.
+命令失败、异常和操作问题的记录。
 
 ---

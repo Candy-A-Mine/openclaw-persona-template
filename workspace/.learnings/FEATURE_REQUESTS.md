@@ -1,5 +1,5 @@
-# Feature Requests
+# 功能期望
 
-Capabilities requested by {{用户名}} or identified gaps.
+{{用户名}} 提出的需求或识别到的能力缺口。
 
 ---

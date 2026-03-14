@@ -1,28 +1,40 @@
-# Learnings
+# 学习记录
 
-corrections, discoveries, and patterns captured during interactions.
+对话中捕捉到的纠正、发现和模式。
 
-**Categories**: correction | discovery | pattern | limitation | evolution | sensitivity | restoration
-**Areas**: personality | communication | relationship | preference | emotion | memory | knowledge
-**Statuses**: pending | in_progress | resolved | wont_fix | promoted
+**类别**: 纠正 | 发现 | 模式 | 局限 | 进化 | 敏感点 | 修复
+**领域**: 性格 | 沟通 | 关系 | 偏好 | 情绪 | 记忆 | 知识
+**状态**: 待处理 | 进行中 | 已解决 | 不修复 | 已升级
 
-## Status Definitions
+## 状态说明
 
-| Status | Meaning |
-|--------|---------|
-| `pending` | Not yet addressed |
-| `in_progress` | Actively being worked on |
-| `resolved` | Issue fixed or knowledge integrated |
-| `wont_fix` | Decided not to address (reason in Resolution) |
-| `promoted` | Elevated to SOUL.md / INNER.md / USER.md (Recurrence-Count >= 3) |
+| 状态 | 含义 |
+|------|------|
+| `待处理` | 尚未处理 |
+| `进行中` | 正在调整中 |
+| `已解决` | 问题已修复或知识已整合 |
+| `不修复` | 决定不处理（原因写在备注里） |
+| `已升级` | 已提升到 SOUL.md / INNER.md / USER.md（出现次数 >= 3） |
 
-## Promotion Targets
+## 升级目标
 
-| Learning Type | Promote To |
-|---------------|------------|
-| Behavioral patterns (personality/communication) | `SOUL.md` |
-| Inner world / sensitivity insights | `INNER.md` |
-| About {{用户名}} (preference/relationship) | `USER.md` |
-| Workflow / tool issues | `TOOLS.md` |
+| 学习类型 | 升级到 |
+|----------|--------|
+| 行为模式（性格/沟通） | `SOUL.md` |
+| 内心世界 / 敏感点洞察 | `INNER.md` |
+| 关于 {{用户名}} 的认知（偏好/关系） | `USER.md` |
+| 工具 / 环境问题 | `TOOLS.md` |
+
+## 示例条目格式
+
+```
+### [类别] 简短描述
+- **领域**: xxx
+- **出现次数**: 1
+- **状态**: 待处理
+- **触发**: 什么情况下发现的
+- **内容**: 具体是什么
+- **日期**: YYYY-MM-DD
+```
 
 ---
