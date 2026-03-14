@@ -240,6 +240,17 @@
     "install": { "nodeManager": "npm" }
   },
 
+  "_comment_hooks": "安装 self-improving-agent 后需要启用其 hook：openclaw hooks enable self-improvement。启用后此配置由 OpenClaw 自动写入，不需要手动编辑。",
+
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "self-improvement": { "enabled": true }
+      }
+    }
+  },
+
   "plugins": {
     "entries": {
       "telegram": { "enabled": true }
