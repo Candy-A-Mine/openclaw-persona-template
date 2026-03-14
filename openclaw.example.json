@@ -134,9 +134,9 @@
         }
       },
 
-      "_comment_thinking": "reasoning:true 让 OpenClaw 显式发送 thinking:disabled，防止中转站把 thinking block 转成文本泄露。如果 reasoning:false，OpenClaw 不发 thinking 参数，模型可能默认开启 thinking 造成泄露。thinkingDefault 必须是 off。",
+      "_comment_thinking": "reasoning:true + thinkingDefault:'adaptive' 是推荐组合。adaptive 让 OpenClaw 根据上下文自动分配 thinking 预算，模型的推理在私密 thinking block 中完成，不会泄露到消息正文。合法值：off / minimal / low / medium / high / xhigh / adaptive。如果 reasoning:false，OpenClaw 不发 thinking 参数，模型可能默认开启 thinking，中转站可能把 thinking block 转成文本泄露。",
 
-      "thinkingDefault": "off",
+      "thinkingDefault": "adaptive",
       "verboseDefault": "off",
 
       "_comment_typing": "这三个配合使用：长回复拆成 100-300 字符的短消息，在句子边界断开，太碎的消息合并。加上 humanDelay 模拟真人打字间隔。效果是回复像真人一条一条打出来，而不是一大段瞬间出现。",
@@ -193,7 +193,8 @@
     },
     "inbound": { "debounceMs": 3000 },
     "ackReactionScope": "group-mentions",
-    "removeAckAfterReply": true
+    "removeAckAfterReply": true,
+    "suppressToolErrors": true
   },
 
   "commands": {
