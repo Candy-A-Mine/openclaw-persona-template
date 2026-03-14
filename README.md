@@ -126,6 +126,7 @@ Skills 不是必须的，但能显著增强角色的能力。详见 [推荐 Skil
 - 角色回复是否遵守排版规则（无 markdown、无空行分段、无一句一行）
 - `memory/mood.json` 的 `since` 字段是否有更新（说明情绪系统在工作）
 - 等待一次 heartbeat 触发后，`memory/` 下是否生成了当天的日记文件（`YYYY-MM-DD.md`）
+- 主动消息触发后，检查 `memory/heartbeat-state.json`：`lastProactive` 应为 ISO 8601 时间戳且 `proactiveAwaitingReply` 为 true（说明退出策略状态机在工作）
 
 ## 技术机制
 
@@ -377,6 +378,7 @@ SOUL.md 是核心文件，章节分两类：
 
 ```json
 {
+  "schemaVersion": 1,               // 结构版本号，用于未来字段迁移
   "lastDiaryCheck": null,           // 上次写日记的时间（ISO 8601），null 表示从未执行
   "lastMemoryReview": null,         // 上次记忆整理的时间（ISO 8601）
   "lastProactive": null,            // 上次主动消息的时间（ISO 8601）
