@@ -1,0 +1,247 @@
+{
+  "_comment": "这是 openclaw.json 的完整示例。复制到 ~/.openclaw/openclaw.json 后，替换所有 YOUR_... 占位符。",
+
+  "models": {
+    "mode": "merge",
+    "providers": {
+
+      "_comment_providers": "至少配一个主模型 provider。如果用 API 中转站，baseUrl 填中转站地址。",
+
+      "main": {
+        "baseUrl": "https://YOUR_API_PROVIDER_URL",
+        "apiKey": "YOUR_API_KEY",
+        "api": "anthropic-messages",
+        "models": [
+          {
+            "id": "claude-opus-4-6",
+            "name": "Claude Opus 4.6",
+            "reasoning": true,
+            "input": ["text", "image"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 200000,
+            "maxTokens": 16384
+          }
+        ]
+      },
+
+      "_comment_fallback": "备用 provider，主模型挂了自动降级。可以配多个。不需要可以删掉。",
+
+      "fallback-1": {
+        "baseUrl": "https://YOUR_FALLBACK_PROVIDER_URL",
+        "apiKey": "YOUR_FALLBACK_API_KEY",
+        "api": "anthropic-messages",
+        "models": [
+          {
+            "id": "claude-4.6-sonnet-medium",
+            "name": "Claude 4.6 Sonnet Medium",
+            "reasoning": true,
+            "input": ["text", "image"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 200000,
+            "maxTokens": 16384
+          },
+          {
+            "id": "claude-4.5-haiku",
+            "name": "Claude 4.5 Haiku",
+            "reasoning": true,
+            "input": ["text", "image"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 200000,
+            "maxTokens": 8192
+          }
+        ]
+      },
+
+      "_comment_openai": "OpenAI 兼容的模型（如 DeepSeek）作为最后的兜底。不需要可以删掉。",
+
+      "fallback-openai": {
+        "baseUrl": "https://YOUR_OPENAI_COMPATIBLE_URL",
+        "apiKey": "YOUR_OPENAI_COMPATIBLE_KEY",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "deepseek-v3.2",
+            "name": "DeepSeek V3.2",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0 },
+            "contextWindow": 131072,
+            "maxTokens": 8192
+          }
+        ]
+      },
+
+      "_comment_google": "Google Gemini 用于两个场景：(1) memorySearch 记忆语义搜索 (2) 贴纸图片识别。免费层级够用。不需要可以删掉，但记忆搜索和贴纸识别会失效。",
+
+      "google": {
+        "baseUrl": "https://generativelanguage.googleapis.com",
+        "apiKey": "YOUR_GEMINI_API_KEY",
+        "api": "google-generative-ai",
+        "models": [
+          {
+            "id": "gemini-2.0-flash",
+            "name": "Gemini 2.0 Flash",
+            "reasoning": false,
+            "input": ["text", "image"],
+            "cost": { "input": 0, "output": 0 },
+            "contextWindow": 1048576,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+
+  "agents": {
+    "defaults": {
+
+      "_comment_model": "primary 是主力模型，fallbacks 按顺序降级。格式：provider名/模型id。",
+
+      "model": {
+        "primary": "main/claude-opus-4-6",
+        "fallbacks": [
+          "fallback-1/claude-4.6-sonnet-medium",
+          "fallback-1/claude-4.5-haiku",
+          "fallback-openai/deepseek-v3.2"
+        ]
+      },
+
+      "workspace": "~/.openclaw/workspace",
+      "userTimezone": "Asia/Shanghai",
+      "timeFormat": "24",
+
+      "_comment_memory": "memorySearch.provider 指定用哪个 provider 做记忆语义搜索。填 'google' 可以用免费的 Gemini。",
+
+      "memorySearch": {
+        "provider": "google",
+        "query": {
+          "hybrid": {
+            "enabled": true,
+            "mmr": { "enabled": true },
+            "temporalDecay": { "enabled": true, "halfLifeDays": 30 }
+          }
+        }
+      },
+
+      "_comment_compaction": "上下文快满时自动压缩。prompt 告诉模型压缩时保留什么、丢弃什么。",
+
+      "compaction": {
+        "mode": "safeguard",
+        "memoryFlush": {
+          "softThresholdTokens": 10000,
+          "prompt": "把这次对话中值得记住的内容写入日记 memory/YYYY-MM-DD.md，同时检查 mood.json 的情绪和好感度是否需要更新。如果没有需要存的内容，直接回复 NO_REPLY（这是系统指令，不会发送给用户）。",
+          "systemPrompt": "对话即将被压缩。现在把重要的记忆存下来。"
+        }
+      },
+
+      "_comment_thinking": "reasoning:true 让 OpenClaw 显式发送 thinking:disabled，防止中转站把 thinking block 转成文本泄露。如果 reasoning:false，OpenClaw 不发 thinking 参数，模型可能默认开启 thinking 造成泄露。thinkingDefault 必须是 off。",
+
+      "thinkingDefault": "off",
+      "verboseDefault": "off",
+
+      "_comment_typing": "这三个配合使用：长回复拆成 100-300 字符的短消息，在句子边界断开，太碎的消息合并。加上 humanDelay 模拟真人打字间隔。效果是回复像真人一条一条打出来，而不是一大段瞬间出现。",
+
+      "blockStreamingDefault": "on",
+      "blockStreamingChunk": {
+        "minChars": 100,
+        "maxChars": 300,
+        "breakPreference": "sentence"
+      },
+      "blockStreamingCoalesce": { "idleMs": 2000 },
+      "humanDelay": { "mode": "natural" },
+      "typingMode": "instant",
+
+      "heartbeat": {
+        "every": "2h",
+        "activeHours": {
+          "start": "08:00",
+          "end": "23:30",
+          "timezone": "Asia/Shanghai"
+        },
+        "includeReasoning": false
+      },
+
+      "maxConcurrent": 4,
+      "subagents": { "maxConcurrent": 8 }
+    }
+  },
+
+  "_comment_tools": "elevated 允许特定用户通过 Telegram 执行高权限操作（如读写文件、运行命令）。sandbox.tools.allow 定义角色可以使用哪些工具类型。",
+
+  "tools": {
+    "elevated": {
+      "enabled": true,
+      "allowFrom": {
+        "telegram": ["YOUR_TELEGRAM_CHAT_ID"]
+      }
+    },
+    "sandbox": {
+      "tools": {
+        "allow": ["browser", "canvas", "nodes", "cron", "telegram"]
+      }
+    }
+  },
+
+  "_comment_messages": "collect 模式 + 5s 防抖：用户连发多条消息时合并成一个 turn 再发给模型，避免逐条回复。这是陪聊体验的关键配置。",
+
+  "messages": {
+    "responsePrefix": "",
+    "queue": {
+      "mode": "collect",
+      "debounceMs": 5000,
+      "drop": "summarize"
+    },
+    "inbound": { "debounceMs": 3000 },
+    "ackReactionScope": "group-mentions",
+    "removeAckAfterReply": true
+  },
+
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+
+  "_comment_telegram": "streaming:off 因为 blockStreaming 已经在处理消息分条。groupPolicy:disabled 防止角色在群里回复。reactionLevel:extensive 让角色自由使用表情反应。",
+
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "YOUR_TELEGRAM_BOT_TOKEN",
+      "dmPolicy": "pairing",
+      "groupPolicy": "disabled",
+      "chunkMode": "newline",
+      "streaming": "off",
+      "linkPreview": false,
+      "reactionNotifications": "all",
+      "reactionLevel": "extensive",
+      "actions": { "deleteMessage": true, "sticker": true },
+      "capabilities": { "inlineButtons": "off" }
+    }
+  },
+
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "YOUR_GATEWAY_TOKEN"
+    },
+    "tailscale": { "mode": "off", "resetOnExit": false },
+    "nodes": {
+      "denyCommands": ["calendar.add", "contacts.add", "reminders.add"]
+    }
+  },
+
+  "skills": {
+    "install": { "nodeManager": "npm" }
+  },
+
+  "plugins": {
+    "entries": {
+      "telegram": { "enabled": true }
+    }
+  }
+}

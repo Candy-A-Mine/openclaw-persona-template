@@ -101,9 +101,16 @@ cp -r workspace/ ~/.openclaw/workspace/
 | `SOUL.md` | 修改"我是谁"、"外貌"、"我的日常"、"性格内核"、"说话风格"等章节。情绪系统、记忆机制、对话节奏感、情绪回应框架、学习与迭代等通用框架建议保留 |
 | `INNER.md` | 替换为你角色的背景故事、知识偏好、周围的人、敏感点与防御机制 |
 
-### 4. 应用推荐配置
+### 4. 应用配置
 
-将下方 [推荐的 OpenClaw 配置](#推荐的-openclaw-配置) 中的设置合并到你的 `openclaw.json` 中。其中 heartbeat、消息队列、打字节奏等配置对角色表现影响很大，建议完整应用。
+仓库根目录提供了完整的 `openclaw.example.json`，包含模型 provider、fallback 链、消息队列、打字节奏、Telegram 互动等所有配置，每个关键字段都有注释说明。
+
+```bash
+# 复制为你的配置文件（如果已有 openclaw.json，手动合并需要的部分）
+cp openclaw.example.json ~/.openclaw/openclaw.json
+```
+
+替换文件中所有 `YOUR_...` 占位符：API key、Telegram bot token、chat ID、gateway token 等。详细的配置原理说明见 [推荐的 OpenClaw 配置](#推荐的-openclaw-配置)。
 
 ### 5. 安装推荐 Skills
 
@@ -171,6 +178,8 @@ Skills 不是必须的，但能显著增强角色的能力。详见 [推荐 Skil
 ## 系统架构
 
 ```
+openclaw.example.json                ← OpenClaw 主配置：模型、fallback、消息队列、Telegram、heartbeat
+
 workspace/
 ├── SOUL.md                      ← 人格核心：性格、说话风格、情绪系统、记忆机制、情绪回应、学习与迭代
 ├── INNER.md                     ← 内在世界：角色的过去、精神世界、周围的人
@@ -255,6 +264,7 @@ OpenClaw 的 heartbeat 是一个定时器，按配置的间隔向角色发送信
 
 | 类型 | 文件 | 说明 |
 |------|------|------|
+| 配置 | `openclaw.example.json` | 完整的 OpenClaw 主配置示例，替换 `YOUR_...` 占位符即可使用 |
 | 示例 | `SOUL.md`、`IDENTITY.md`、`INNER.md` | 包含世凪的完整角色设定，作为示例展示系统能力。需要替换为你自己的角色 |
 | 模板 | `USER.md`、`TOOLS.md`、`MOLTBOOK.md` | 包含 `{{占位符}}`，填入你的信息即可 |
 | 半通用 | `AGENTS.md`、`HEARTBEAT.md`、`MEMORY.md`、`.learnings/*` | 逻辑不需要改，但里面的 `{{用户名}}` 需要替换 |
