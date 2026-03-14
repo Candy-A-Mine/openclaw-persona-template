@@ -138,7 +138,7 @@ Skills 不是必须的，但能显著增强角色的能力。详见 [推荐 Skil
 
 ### 心跳系统（HEARTBEAT.md）
 
-每 2 小时触发，按顺序执行：写日记 → 记忆整理 → 学习回顾（intensity >= 7 时跳过）→ 情绪衰减 → 基线检查 → unresolved 清理 → 主动消息。主动消息有硬条件门控（awaiting reply / 冷却 / 时段 / 情绪状态 / 退出策略）和软条件（对方信号 / 社交电量），详见 HEARTBEAT.md。全程静默，不输出任何非聊天内容。
+每 2 小时触发，按顺序执行：写日记 → 记忆整理 → 学习回顾（intensity >= 7 时跳过）→ 情绪衰减 → 基线检查 → unresolved 清理 → 主动消息。主动消息有硬条件门控（awaiting reply / 默认冷却 6h、软条件可拉长到 10h / 时段 09:00-22:00 / 情绪状态 / 连续未回复 2 次暂停 48h）和软条件（对方信号 / 情绪余波 / 社交电量），详见 HEARTBEAT.md。全程静默，不输出任何非聊天内容。
 
 ### 内在世界（INNER.md）
 
@@ -174,7 +174,7 @@ workspace/
 │   └── FEATURE_REQUESTS.md          ← 用户期望和能力缺口
 └── memory/
     ├── mood.json                ← 情绪状态：当前情绪、基线、好感度、历史
-    ├── heartbeat-state.json     ← 心跳状态：各定时任务的上次执行时间
+    ├── heartbeat-state.json     ← 心跳状态：各定时任务的上次执行时间、主动消息退出策略状态
     └── YYYY-MM-DD.md            ← 日记：角色每天自动写的私密笔记（运行时生成）
 ```
 
@@ -246,6 +246,8 @@ OpenClaw 的 heartbeat 是一个定时器，按配置的间隔向角色发送信
 | 模板 | `USER.md`、`TOOLS.md`、`MOLTBOOK.md` | 包含 `{{占位符}}`，填入你的信息即可 |
 | 半通用 | `AGENTS.md`、`HEARTBEAT.md`、`MEMORY.md`、`.learnings/*` | 逻辑不需要改，但里面的 `{{用户名}}` 需要替换 |
 | 通用 | `memory/*`、`example-diary.md` | 初始状态文件和示例，可以直接使用 |
+
+> **注意**：`SOUL.md`、`IDENTITY.md`、`INNER.md` 包含的是示例角色「世凪」的**完整成品设定**（含学校、关系、恋人等个人信息）。Fork 后如果不替换这三个文件，角色会直接继承世凪的身份和关系设定。请务必按照下方[自定义指南](#自定义指南)替换为你自己的角色。
 
 ## 推荐 Skills
 
@@ -350,20 +352,20 @@ SOUL.md 是核心文件，章节分两类：
     "surface": "calm",      // 表面情绪
     "underlying": "calm",   // 内心情绪
     "reason": "...",         // 原因
-    "since": "ISO时间戳",    // 开始时间
-    "intensity": 0           // 强度 0-8
+    "since": "ISO时间戳",    // 开始时间（ISO 8601，仅初始化允许 null）
+    "intensity": 0           // 强度 0-8（整数）
   },
   "baseline": {
     "mood": "neutral",       // 底层情绪基调
     "note": "...",           // 说明
-    "since": "日期"
+    "since": "日期"          // ISO 8601，仅初始化允许 null
   },
   "affection": {
-    "level": 50,             // 好感度 0-100
+    "level": 50,             // 好感度 0-100（整数）
     "trend": "stable"        // 趋势：up / down / stable
   },
   "unresolved": [],          // 未解决的情绪事项
-  "history": []              // 最近 10 条情绪事件
+  "history": []              // 最近 10 条情绪事件（超出移除最旧的）
 }
 ```
 

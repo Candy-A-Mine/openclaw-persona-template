@@ -2,5 +2,7 @@
   "lastDiaryCheck": null,
   "lastMemoryReview": null,
   "lastProactive": null,
-  "proactiveAwaitingReply": false
+  "proactiveAwaitingReply": false,
+  "proactiveNoReplyStreak": 0,
+  "proactivePauseUntil": null
 }
