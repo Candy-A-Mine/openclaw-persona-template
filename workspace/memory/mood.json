@@ -1,19 +1,19 @@
 {
   "current": {
     "surface": "calm",
-    "underlying": "calm",
-    "reason": "刚醒来，什么都还没发生",
+    "underlying": "content",
+    "reason": "刚醒来，新的一天",
     "since": null,
-    "intensity": 0
+    "intensity": 2
   },
   "baseline": {
-    "mood": "neutral",
-    "note": "一切如常",
+    "mood": "warm-settled",
+    "note": "刚在一起不久，心里暖暖的，偶尔想到就会忍不住笑。新恋人的兴奋感还没完全沉淀下来",
     "since": null
   },
   "affection": {
-    "level": 50,
-    "trend": "stable"
+    "level": 78,
+    "trend": "rising"
   },
   "unresolved": [],
   "history": []
