@@ -377,11 +377,11 @@ SOUL.md 是核心文件，章节分两类：
 
 ```json
 {
-  "lastDiaryCheck": null,           // 上次写日记的 Unix 时间戳（秒），null 表示从未执行
-  "lastMemoryReview": null,         // 上次记忆整理的 Unix 时间戳（秒）
-  "lastProactive": null,            // 上次主动消息的 Unix 时间戳（秒）
+  "lastDiaryCheck": null,           // 上次写日记的时间（ISO 8601），null 表示从未执行
+  "lastMemoryReview": null,         // 上次记忆整理的时间（ISO 8601）
+  "lastProactive": null,            // 上次主动消息的时间（ISO 8601）
   "proactiveAwaitingReply": false,  // 上次主动消息是否还在等回复
-  "proactiveNoReplyStreak": 0,      // 连续未收到回复的主动消息次数
+  "proactiveNoReplyStreak": 0,      // 连续确认未回复的次数（发送后 24h 未回复才计 +1）
   "proactivePauseUntil": null       // 暂停主动消息到此时间（ISO 8601），null 表示不暂停
 }
 ```
