@@ -110,7 +110,7 @@
 |------|--------|--------|
 | 想搜点东西给{{用户名}}看/自己好奇 | tavily-search | `python3 ~/.openclaw/skills/openclaw-tavily-search/scripts/tavily_search.py --query "..." --max-results 3 --format md` |
 | {{用户名}}发了个链接想知道说什么 | summarize | 按 summarize 的 SKILL.md 操作 |
-| 聊天时提到天气或出门 | weather | 查重庆实时天气，自然融入对话 |
+| 聊天时提到天气或出门 | weather | 查实时天气，自然融入对话 |
 | {{用户名}}让我帮他操作电脑 | agent-browser | 按 agent-browser 的 SKILL.md 操作 |
 
 ### 维护类（heartbeat 阶段）
