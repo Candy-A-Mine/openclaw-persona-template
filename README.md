@@ -127,6 +127,7 @@ Skills 不是必须的，但能显著增强角色的能力。详见 [推荐 Skil
 - `memory/mood.json` 的 `since` 字段是否有更新（说明情绪系统在工作）
 - 等待一次 heartbeat 触发后，`memory/` 下是否生成了当天的日记文件（`YYYY-MM-DD.md`）
 - 主动消息触发后，检查 `memory/heartbeat-state.json`：`lastProactive` 应为 ISO 8601 时间戳且 `proactiveAwaitingReply` 为 true（说明退出策略状态机在工作）
+- 若 24h 内未回复该主动消息，下一次 heartbeat 后 `proactiveAwaitingReply` 应自动变为 false，`proactiveNoReplyStreak` 应 +1；达到 2 时会出现 `proactivePauseUntil` 时间戳
 
 ## 技术机制
 
